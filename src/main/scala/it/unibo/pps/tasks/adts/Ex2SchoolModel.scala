@@ -1,6 +1,12 @@
 package it.unibo.pps.tasks.adts
 
-import it.unibo.pps.u03.extensionmethods.Sequences.Sequence, Sequence.*
+import it.unibo.pps.u03.extensionmethods.Sequences.Sequence
+import Sequence.*
+import it.unibo.pps.tasks.adts
+import it.unibo.pps.u02.AlgebraicDataTypes.Person
+import it.unibo.pps.u02.Modules.Person.Teacher
+
+import scala.annotation.tailrec
 
 /*  Exercise 2: 
  *  Implement the below trait, and write a meaningful test.
@@ -112,17 +118,30 @@ object SchoolModel:
        */
       def hasCourse(name: String): Boolean
   object BasicSchoolModule extends SchoolModule:
-    override type School = Nothing
-    override type Teacher = Nothing
-    override type Course = Nothing
+    override type School = Sequence[(Teacher, Course)]
+    override type Teacher = String
+    override type Course = String
 
-    def teacher(name: String): Teacher = ???
-    def course(name: String): Course = ???
-    def emptySchool: School = ???
+    def teacher(name: String): Teacher = name
+    def course(name: String): Course = name
+    def emptySchool: School = Nil()
+
+    private def distinct[A](seq: Sequence[A]): Sequence[A] =
+      @tailrec
+      def contains(s: Sequence[A], elem: A): Boolean = s match
+        case Cons(h, t) => h == elem || contains(t, elem)
+        case Nil() => false
+
+      def filterUniques(s: Sequence[A], seen: Sequence[A]): Sequence[A] = s match
+        case Cons(h, t) if contains(seen, h) => filterUniques(t, seen)
+        case Cons(h, t) => Cons(h, filterUniques(t, Cons(h, seen)))
+        case Nil() => Nil()
+
+      filterUniques(seq, Nil())
 
     extension (school: School)
-      def courses: Sequence[String] = ???
-      def teachers: Sequence[String] = ???
+      def courses: Sequence[String] = distinct(map(school){ case (_, c) => c})
+      def teachers: Sequence[String] = distinct(map(school){ case (t, _) => t})
       def setTeacherToCourse(teacher: Teacher, course: Course): School = ???
       def coursesOfATeacher(teacher: Teacher): Sequence[Course] = ???
       def hasTeacher(name: String): Boolean = ???
