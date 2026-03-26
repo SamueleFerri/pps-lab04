@@ -52,3 +52,16 @@ class SchooTest:
 
     val t3 = teacher("Omicini")
     assertEquals(Nil(), populatedSchool.coursesOfATeacher(t3))
+
+  @Test
+  def testHasTeacher(): Unit =
+    assertFalse(school.hasTeacher("Viroli"))
+    val populatedSchool = school.setTeacherToCourse(t1, c1)
+    assertFalse(populatedSchool.hasTeacher("Ricci"))
+
+  @Test
+  def testHasCourse(): Unit =
+    assertFalse(school.hasCourse("PPS"))
+    val populatedSchool = school.setTeacherToCourse(t1, c1)
+    assertTrue(populatedSchool.hasCourse("PPS"))
+    assertFalse(populatedSchool.hasCourse("OOP"))
