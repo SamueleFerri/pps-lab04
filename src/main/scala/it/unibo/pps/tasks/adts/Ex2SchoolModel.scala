@@ -136,8 +136,10 @@ object SchoolModel:
       def setTeacherToCourse(teacher: Teacher, course: Course): School = Cons((teacher, course), school)
       def coursesOfATeacher(teacher: Teacher): Sequence[Course] =
         distinct(map(filter(school){ case (t, _) => t == teacher}){ case (_, c) => c})
-      def hasTeacher(name: String): Boolean = ???
-      def hasCourse(name: String): Boolean = ???
+      def hasTeacher(name: String): Boolean =
+        filter(school) { case (t, _) => t == name } != Nil()
+      def hasCourse(name: String): Boolean =
+        filter(school) { case (_, c) => c == name } != Nil()
 @main def examples(): Unit =
   import SchoolModel.BasicSchoolModule.*
   val school = emptySchool
