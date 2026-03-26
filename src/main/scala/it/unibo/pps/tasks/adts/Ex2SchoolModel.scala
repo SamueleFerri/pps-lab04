@@ -126,24 +126,16 @@ object SchoolModel:
     def course(name: String): Course = name
     def emptySchool: School = Nil()
 
-    private def distinct[A](seq: Sequence[A]): Sequence[A] =
-      @tailrec
-      def contains(s: Sequence[A], elem: A): Boolean = s match
-        case Cons(h, t) => h == elem || contains(t, elem)
-        case Nil() => false
-
-      def filterUniques(s: Sequence[A], seen: Sequence[A]): Sequence[A] = s match
-        case Cons(h, t) if contains(seen, h) => filterUniques(t, seen)
-        case Cons(h, t) => Cons(h, filterUniques(t, Cons(h, seen)))
-        case Nil() => Nil()
-
-      filterUniques(seq, Nil())
+    private def distinct[A](s: Sequence[A]): Sequence[A] = s match
+      case Cons(h, t) => Cons(h, distinct(filter(t)(_ != h)))
+      case Nil() => Nil()
 
     extension (school: School)
       def courses: Sequence[String] = distinct(map(school){ case (_, c) => c})
       def teachers: Sequence[String] = distinct(map(school){ case (t, _) => t})
-      def setTeacherToCourse(teacher: Teacher, course: Course): School = ???
-      def coursesOfATeacher(teacher: Teacher): Sequence[Course] = ???
+      def setTeacherToCourse(teacher: Teacher, course: Course): School = Cons((teacher, course), school)
+      def coursesOfATeacher(teacher: Teacher): Sequence[Course] =
+        distinct(map(filter(school){ case (t, _) => t == teacher}){ case (_, c) => c})
       def hasTeacher(name: String): Boolean = ???
       def hasCourse(name: String): Boolean = ???
 @main def examples(): Unit =

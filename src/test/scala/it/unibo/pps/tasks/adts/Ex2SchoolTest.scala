@@ -12,6 +12,7 @@ class SchooTest:
   val t2: String = teacher("Ricci")
   val c1: String = course("PPS")
   val c2: String = course("OOP")
+  val c3: String = course("Sistemi")
   val manualSchool: School = Cons((t1, c1), Cons((t1, c2), Cons((t2, c1), Nil())))
   val extractedCourses: Sequences.Sequence[String] = manualSchool.courses
   val extractedTeachers: Sequences.Sequence[String] = manualSchool.teachers
@@ -34,3 +35,20 @@ class SchooTest:
   def testSetTeacherToCourse(): Unit =
     assertEquals(Cons((t1, c1), Nil()), school1)
     assertEquals(Cons((t1, c2), Cons((t1, c1), Nil())), school2)
+
+  @Test
+  def testCoursesOfATeacher(): Unit =
+    val populatedSchool = school
+      .setTeacherToCourse(t1, c1)
+      .setTeacherToCourse(t2, c3)
+      .setTeacherToCourse(t1, c2)
+      .setTeacherToCourse(t1, c1)
+
+    val viroliCourses = populatedSchool.coursesOfATeacher(t1)
+    assertEquals(Cons(c1, Cons(c2, Nil())), viroliCourses)
+
+    val ricciCourses = populatedSchool.coursesOfATeacher(t2)
+    assertEquals(Cons(c3, Nil()), ricciCourses)
+
+    val t3 = teacher("Omicini")
+    assertEquals(Nil(), populatedSchool.coursesOfATeacher(t3))
